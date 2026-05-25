@@ -17,6 +17,7 @@
 #include <Spinner.h>
 #include <StringView.h>
 #include <TabView.h>
+#include <Slider.h>
 
 
 #undef B_TRANSLATION_CONTEXT
@@ -78,6 +79,29 @@ PreferencesWindow::MessageReceived(BMessage* message)
 		{
 			fPreferences->SetProperty<rgb_color>("BackColor",
 				fBackgroundColorControl->ValueAsColor());
+			break;
+		}
+		case kMsgOuterFrameColor:
+		{
+			fPreferences->SetProperty<rgb_color>("OuterFrameColor",
+				fOuterFrameColorControl->ValueAsColor());
+			break;
+		}
+		case kMsgOpacity:
+		{
+			rgb_color c = fPreferences->GetProperty<rgb_color>("BackColor", (rgb_color){229,235,231,255});
+			c.alpha = (uint8)fOpacitySlider->Value();
+			fPreferences->SetProperty<rgb_color>("BackColor", c);
+			break;
+		}
+		case kMsgBarSize:
+		{
+			fPreferences->SetProperty<int32>("BarSize", fBarSizeControl->Value());
+			break;
+		}
+		case kMsgIconSize:
+		{
+			fPreferences->SetProperty<int32>("IconSize", fIconSizeControl->Value());
 			break;
 		}
 		case kMsgOuterFrameColor:
@@ -229,6 +253,17 @@ PreferencesWindow::_InitControls()
 		new BMessage(kMsgDrawOuterFrame));
 	fHideEffectDelayControl = new BSpinner("HideEffectDelay", B_TRANSLATE("Hide effect delay"),
 		new BMessage(kMsgHideEffectDelay));
+	
+	fOpacitySlider = new BSlider("OpacitySlider", B_TRANSLATE("Opacity"), new BMessage(kMsgOpacity), 0, 255, B_HORIZONTAL);
+	fOpacitySlider->SetLimitLabels(B_TRANSLATE("Transparent"), B_TRANSLATE("Opaque"));
+
+	fBarSizeControl = new BSpinner("BarSize", B_TRANSLATE("Bar Size"), new BMessage(kMsgBarSize));
+	fBarSizeControl->SetMinValue(20);
+	fBarSizeControl->SetMaxValue(100);
+
+	fIconSizeControl = new BSpinner("IconSize", B_TRANSLATE("Icon Size"), new BMessage(kMsgIconSize));
+	fIconSizeControl->SetMinValue(16);
+	fIconSizeControl->SetMaxValue(64);
 
 	BBox *backgroundBox = new BBox("BackgroundBox");
 	backgroundBox->AddChild(BLayoutBuilder::Group<>()
@@ -254,8 +289,11 @@ PreferencesWindow::_InitControls()
 			.Add(fAlwaysOnTopControl)
 			.Add(fAutoHideControl)
 			.Add(fHideEffectDelayControl)
+			.Add(fBarSizeControl)
+			.Add(fIconSizeControl)
 			.AddStrut(10)
 			.Add(backgroundBox)
+			.Add(fOpacitySlider)
 			.AddStrut(10)
 			.Add(frameBox)
 		.End()
@@ -325,8 +363,14 @@ PreferencesWindow::_LoadSettings()
 	fHideEffectDelayControl->SetEnabled(fAutoHideControl->Value());
 	fDrawOuterFrameControl->SetValue(fPreferences->GetProperty("DrawOuterFrame", false));
 	fHideEffectDelayControl->SetValue(fPreferences->GetProperty<int32>("HideEffectDelay", 600000));
-	fBackgroundColorControl->SetValue(fPreferences->GetProperty<rgb_color>("BackColor",
-		(rgb_color){229,235,231,255}));
+	
+	rgb_color bgColor = fPreferences->GetProperty<rgb_color>("BackColor", (rgb_color){229,235,231,255});
+	fBackgroundColorControl->SetValue(bgColor);
+	fOpacitySlider->SetValue(bgColor.alpha);
+
+	fBarSizeControl->SetValue(fPreferences->GetProperty<int32>("BarSize", 40));
+	fIconSizeControl->SetValue(fPreferences->GetProperty<int32>("IconSize", 32));
+
 	fOuterFrameColorControl->SetValue(fPreferences->GetProperty<rgb_color>("OuterFrameColor",
 		(rgb_color){96,96,96,255}));
 	fOuterFrameColorControl->SetEnabled(fDrawOuterFrameControl->Value());

@@ -39,6 +39,9 @@ static const uint32 kMsgSelectTab = 'seta';
 static const uint32 kMsgOuterFrameColor = 'ofco';
 static const uint32 kMsgPreferencesChangedFromOutside = 'scfo';
 static const uint32 kMsgItemDragged = 'itdr';
+static const uint32 kMsgOpacity = 'opac';
+static const uint32 kMsgIconSize = 'icsz';
+static const uint32 kMsgBarSize = 'brsz';
 
 
 class PreferencesWindow : public BWindow
@@ -66,6 +69,9 @@ private:
 	BCheckBox*			fAutoHideControl;
 	BCheckBox*			fDrawOuterFrameControl;
 	BSpinner*			fHideEffectDelayControl;
+	BSlider*			fOpacitySlider;
+	BSpinner*			fIconSizeControl;
+	BSpinner*			fBarSizeControl;
 
 	TabListView*		fTabListView;
 	BScrollView* 		fScrollListView;

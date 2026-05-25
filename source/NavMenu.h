@@ -46,7 +46,7 @@ All rights reserved.
 #include "SlowMenu.h"
 
 
-template<class T, bool O> class BObjectList;
+template<class T> class BObjectList;
 class BMenuItem;
 
 namespace BPrivate {
@@ -137,7 +137,7 @@ class BNavMenu : public BSlowMenu {
 
 		// menu building state
 		uint8		fFlags;
-		BObjectList<BMenuItem, false>* fItemList;
+		BObjectList<BMenuItem>* fItemList;
 		EntryListBase *fContainer;
 		bool		fIteratingDesktop;
 

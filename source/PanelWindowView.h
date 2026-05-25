@@ -156,6 +156,8 @@ private:
 	bool fHideStandardDeskbar;
 	bool fUseWindowShapping;
 	rgb_color fOuterFrameColor;
+	int32 fIconSize;
+	int32 fBarSize;
 	int32 fDebugLevel;
 };
 

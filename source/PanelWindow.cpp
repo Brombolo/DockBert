@@ -39,8 +39,10 @@
 #define _MNITEM_H 4
 #define TASK_BAR_MIME_SIG "application/x-vnd.Be-TSKB "
 
+#define kMenuWindowFeel (window_feel)1025
+
 TPanelWindow::TPanelWindow()
-	: BWindow( BRect( 0, 0, 24, 24 ), "Dock", B_NO_BORDER_WINDOW_LOOK, B_FLOATING_ALL_WINDOW_FEEL, B_NOT_MOVABLE | B_NOT_CLOSABLE | B_NOT_ZOOMABLE | B_NOT_MINIMIZABLE | B_NOT_RESIZABLE | B_WILL_ACCEPT_FIRST_CLICK | B_AVOID_FOCUS, B_ALL_WORKSPACES ),
+	: BWindow( BRect( 0, 0, 24, 24 ), "Dock", B_NO_BORDER_WINDOW_LOOK, kMenuWindowFeel, B_NOT_MOVABLE | B_NOT_CLOSABLE | B_NOT_ZOOMABLE | B_NOT_MINIMIZABLE | B_NOT_RESIZABLE | B_WILL_ACCEPT_FIRST_CLICK | B_AVOID_FOCUS, B_ALL_WORKSPACES ),
 	 fPreferencesWindow(NULL)
 {
 	fAutoHide = false;
@@ -94,18 +96,6 @@ TPanelWindow::TPanelWindow()
 			ResizeBy( 0, 40 - Bounds().Width() );
 	}
 
-/*	BMessenger self(this);
-	BList teamList;
-	TBarApp::Subscribe(self, &teamList);
-
-	int32 count = teamList.CountItems();
-	for (int i = 0; i < count; i++) {
-		BarTeamInfo *barInfo = (BarTeamInfo *)teamList.ItemAt(i);
-
-		if ( ( barInfo->flags & B_BACKGROUND_APP ) == 0 && strcasecmp( barInfo->sig, TASK_BAR_MIME_SIG ) != 0 )
-			fTeamListView->AddTeam( barInfo->teams, barInfo->icon, barInfo->name, barInfo->sig );
-	}*/
-
 	BList teamList;
 	be_roster->GetAppList( &teamList );
 
@@ -115,7 +105,8 @@ TPanelWindow::TPanelWindow()
 		app_info appinfo;
 		if ( be_roster->GetRunningAppInfo( (team_id)teamList.ItemAt(i), &appinfo ) == B_OK
 			 && ( appinfo.flags & B_BACKGROUND_APP ) == 0
-			 && strcasecmp( appinfo.signature, TASK_BAR_MIME_SIG ) )
+			 && strcasecmp( appinfo.signature, TASK_BAR_MIME_SIG )
+			 && strcasecmp( appinfo.signature, "application/x-vnd.Dockbert" ) )
 			fTeamListView->AddTeam( appinfo.team, appinfo.signature, appinfo.ref );
 	}
 

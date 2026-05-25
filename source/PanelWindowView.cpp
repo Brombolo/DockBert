@@ -221,8 +221,12 @@ void TPanelWindowView::AttachedToWindow()
 		// </options>
 	}
 
+#ifndef kMenuWindowFeel
+#define kMenuWindowFeel (window_feel)1025
+#endif
+
 	if ( fAlwaysOnTop )
-		Window()->SetFeel( B_FLOATING_ALL_WINDOW_FEEL );
+		Window()->SetFeel( kMenuWindowFeel );
 	else
 		Window()->SetFeel( B_NORMAL_WINDOW_FEEL );
 
@@ -513,7 +517,7 @@ void TPanelWindowView::MessageReceived( BMessage *message )
 			if ( message->FindInt32( "be:flags", &flags ) != B_OK )
 				break;
 
-			if ( sig && strlen(sig) && ( ( flags & B_BACKGROUND_APP ) == 0 ) )
+			if ( sig && strlen(sig) && ( ( flags & B_BACKGROUND_APP ) == 0 ) && strcasecmp(sig, "application/x-vnd.Be-TSKB") && strcasecmp(sig, "application/x-vnd.Dockbert") )
 				AddTeam( tid, sig, ref );
 
 			break;
@@ -777,12 +781,14 @@ void TPanelWindowView::Draw( BRect updateRect )
 	w = Bounds().Width();
 	h = Bounds().Height();
 
+	SetDrawingMode( B_OP_ALPHA );
 	SetHighColor( fColor2 );
 	FillRect( BRect( 0, 0, h, h ) );
 	FillRect( BRect( w-h, 0, w, h ) );
 
 	FillRect( BRect( h/2, 0, w-(h/2), h/2) );
 	FillRect( BRect( 0, h/2, w, h ) );
+	SetDrawingMode( B_OP_COPY );
 
 	fPanels.Lock();
 	for ( int i=0; i<fPanels.CountItems(); i++ )
@@ -1032,9 +1038,25 @@ bool TPanelWindowView::SetOptions( const char *option, const BMessage *msg )
 		if ( msg->FindBool( "data", &fAlwaysOnTop ) != B_OK )
 			return false;
 		if ( fAlwaysOnTop )
-			Window()->SetFeel( B_FLOATING_ALL_WINDOW_FEEL );
+			Window()->SetFeel( kMenuWindowFeel );
 		else
 			Window()->SetFeel( B_NORMAL_WINDOW_FEEL );
+	}
+	else if ( !strcasecmp( option, "IconSize" ) )
+	{
+		if ( msg->FindInt32( "data", &fIconSize ) == B_OK )
+		{
+			// changed size, but need full layout pass
+			// ChangedSize(0);
+		}
+	}
+	else if ( !strcasecmp( option, "BarSize" ) )
+	{
+		if ( msg->FindInt32( "data", &fBarSize ) == B_OK )
+		{
+			// changed size
+			// ChangedSize(0);
+		}
 	}
 	else if ( !strcasecmp( option, "HideStandardDeskbar" ) )
 	{

@@ -9,7 +9,7 @@
 namespace BPrivate {
 
 template <class T, bool Owning = false>
-class LockingList2 : public BObjectList<T, Owning> {
+class LockingList2 : public BObjectList<T> {
 public:
 	LockingList2(int32 itemsPerBlock = 20);
 	~LockingList2()
@@ -26,7 +26,7 @@ public:
 
 template<class T, bool O>
 LockingList2<T, O>::LockingList2(int32 itemsPerBlock)
-	:	BObjectList<T, O>(itemsPerBlock)
+	:	BObjectList<T>(itemsPerBlock, O)
 {
 }
 
